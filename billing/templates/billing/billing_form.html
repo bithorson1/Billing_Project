@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Billing Page</title>
+
+    <style>
+        body {
+            font-family: "Segoe UI", sans-serif;
+            background: #f6f7fb;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 80%;
+            margin: auto;
+            padding: 25px;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .section-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        label {
+            font-weight: 600;
+        }
+
+        input, select {
+            padding: 8px 10px;
+            width: 250px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-top: 6px;
+        }
+
+        .product-row {
+            padding: 15px;
+            margin-bottom: 15px;
+            background: #f1f4ff;
+            border-radius: 8px;
+            border-left: 4px solid #2c7be5;
+        }
+
+        .btn-primary {
+            padding: 10px 20px;
+            background: #2c7be5;
+            border: none;
+            color: white;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            background: #1a5ec8;
+        }
+
+        .btn-green {
+            padding: 12px 25px;
+            background: #28a745;
+            border: none;
+            color: white;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-green:hover {
+            background: #1e7c33;
+        }
+
+        .denom-box input {
+            width: 70px;
+            margin-right: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Billing Page</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <!-- ========================= CUSTOMER ============================= -->
+        <div class="section-card">
+            <h2>Customer Information</h2>
+
+            <label>Email:</label><br>
+            {{ billing_form.customer_email }}<br><br>
+
+            <label>Cash Received:</label><br>
+            {{ billing_form.cash_received }}
+        </div>
+
+        <!-- ========================= PRODUCTS ============================= -->
+        <div class="section-card">
+            <h2>Products</h2>
+
+            {{ line_formset.management_form }}
+
+            <div id="product-container">
+                {% for form in line_formset %}
+                <div class="product-row">
+
+                    <label>Product:</label><br>
+                    {{ form.product }}<br><br>
+
+                    <label>Quantity:</label><br>
+                    {{ form.quantity }}<br><br>
+
+                    {{ form.DELETE }} <label>Remove</label>
+                </div>
+                {% endfor %}
+            </div>
+
+            <button type="button" id="add-product-btn" class="btn-primary">+ Add Product</button>
+        </div>
+
+        <!-- ========================= DENOMINATION ============================= -->
+        <div class="section-card">
+            <h2>Denominations</h2>
+
+            <div class="denom-box">
+                500: {{ denomination_form.d500 }}
+                50: {{ denomination_form.d50 }}
+                20: {{ denomination_form.d20 }}
+                10: {{ denomination_form.d10 }}
+                5: {{ denomination_form.d5 }}
+                2: {{ denomination_form.d2 }}
+                1: {{ denomination_form.d1 }}
+            </div>
+        </div>
+
+        <button type="submit" class="btn-green">Generate Bill</button>
+    </form>
+</div>
+
+<script>
+document.getElementById("add-product-btn").addEventListener("click", function () {
+
+    let formContainer = document.getElementById("product-container");
+    let totalForms = document.getElementById("id_form-TOTAL_FORMS");
+
+    let currentIndex = parseInt(totalForms.value);
+    let firstRowHtml = formContainer.children[0].outerHTML;
+
+    let newRowHtml = firstRowHtml.replace(/form-\d+/g, "form-" + currentIndex);
+
+    formContainer.insertAdjacentHTML("beforeend", newRowHtml);
+    totalForms.value = currentIndex + 1;
+});
+</script>
+
+</body>
+</html>

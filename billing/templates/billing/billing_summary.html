@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Billing Summary</title>
+
+    <style>
+        body {
+            font-family: "Segoe UI", sans-serif;
+            background: #f6f7fb;
+            padding: 20px;
+        }
+
+        .container {
+            width: 80%;
+            margin: auto;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+
+        th {
+            background: #2c7be5;
+            color: white;
+        }
+
+        .title {
+            font-size: 30px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: #2c7be5;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background: #1a5ec8;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <div class="title">Billing Summary</div>
+
+        <p><strong>Email:</strong> {{ purchase.customer_email }}</p>
+
+        <table>
+            <tr>
+                <th>Product</th>
+                <th>Qty</th>
+                <th>Subtotal</th>
+                <th>Tax</th>
+                <th>Total</th>
+            </tr>
+
+            {% for item in purchase.line_items.all %}
+            <tr>
+                <td>{{ item.product.product_code }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>₹{{ item.subtotal }}</td>
+                <td>₹{{ item.tax_amount }}</td>
+                <td>₹{{ item.total_amount }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <h3>Totals</h3>
+        <p>Total Price: ₹{{ purchase.total_price }}</p>
+        <p>Total Tax: ₹{{ purchase.total_tax }}</p>
+        <p>Net Amount: ₹{{ purchase.net_amount }}</p>
+        <p>Rounded Amount: ₹{{ purchase.rounded_amount }}</p>
+        <p>Cash Received: ₹{{ purchase.cash_received }}</p>
+        <p>Balance Returned: ₹{{ purchase.balance_to_customer }}</p>
+
+        <h3>Change Breakdown</h3>
+        <ul>
+            {% for key, value in purchase.denomination_breakdown.items %}
+            <li>₹{{ key }} : {{ value }}</li>
+            {% endfor %}
+        </ul>
+
+        <a href="/" class="btn">New Bill</a>
+
+    </div>
+
+</div>
+
+</body>
+</html>

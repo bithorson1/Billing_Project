@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice #{{ purchase.id }}</title>
+</head>
+
+<body style="margin:0; padding:0; background:#f2f3f5; font-family:'Segoe UI', Arial, sans-serif;">
+
+    <table width="100%" cellpadding="0" cellspacing="0" style="padding:30px 0; background:#f2f3f5;">
+        <tr>
+            <td align="center">
+
+                <!-- Outer Card -->
+                <table width="600" cellpadding="0" cellspacing="0" style="background:white; border-radius:12px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
+
+                    <!-- Header -->
+                    <tr>
+                        <td style="background:#4a6cf7; padding:25px; text-align:center; color:white;">
+                            <h1 style="margin:0; font-size:28px; letter-spacing:1px;">INVOICE</h1>
+                            <p style="margin:5px 0 0; font-size:14px; color:#e8e8e8;">
+                                Thank you for your purchase
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Info Section -->
+                    <tr>
+                        <td style="padding:25px;">
+                            <h2 style="margin:0 0 10px; font-size:20px; color:#333;">Billing Details</h2>
+
+                            <p style="margin:6px 0; font-size:15px;"><strong>Invoice ID:</strong> #{{ purchase.id }}</p>
+                            <p style="margin:6px 0; font-size:15px;"><strong>Email:</strong> {{ purchase.customer_email }}</p>
+                            <p style="margin:6px 0; font-size:15px;"><strong>Date:</strong> {{ purchase.created_at|date:"M d, Y, h:i A" }}</p>
+                        </td>
+                    </tr>
+
+                    <!-- Line Items Header -->
+                    <tr>
+                        <td style="padding:0 25px;">
+                            <h2 style="margin:0 0 10px; font-size:20px; color:#333;">Order Summary</h2>
+                        </td>
+                    </tr>
+
+                    <!-- Items Table -->
+                    <tr>
+                        <td style="padding:0 25px 25px;">
+                            <table width="100%" cellpadding="10" cellspacing="0" style="border-collapse:collapse;">
+
+                                <!-- Table Header -->
+                                <tr style="background:#f1f3ff; border-bottom:2px solid #ddd;">
+                                    <th align="left" style="font-size:14px; border:1px solid #ddd;">Product</th>
+                                    <th align="center" style="font-size:14px; border:1px solid #ddd;">Qty</th>
+                                    <th align="right" style="font-size:14px; border:1px solid #ddd;">Subtotal</th>
+                                    <th align="right" style="font-size:14px; border:1px solid #ddd;">Tax</th>
+                                    <th align="right" style="font-size:14px; border:1px solid #ddd;">Total</th>
+                                </tr>
+
+                                <!-- Line Items -->
+                                {% for item in purchase.line_items.all %}
+                                <tr>
+                                    <td style="border:1px solid #ddd; font-size:14px;">{{ item.product.product_code }}</td>
+                                    <td align="center" style="border:1px solid #ddd; font-size:14px;">{{ item.quantity }}</td>
+                                    <td align="right" style="border:1px solid #ddd; font-size:14px;">₹{{ item.subtotal }}</td>
+                                    <td align="right" style="border:1px solid #ddd; font-size:14px;">₹{{ item.tax_amount }}</td>
+                                    <td align="right" style="border:1px solid #ddd; font-size:14px;">₹{{ item.total_amount }}</td>
+                                </tr>
+                                {% endfor %}
+
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Billing Summary -->
+                    <tr>
+                        <td style="padding:0 25px 25px;">
+                            <h2 style="margin-bottom:12px; font-size:20px; color:#333;">Billing Summary</h2>
+
+                            <table width="100%" cellpadding="5" cellspacing="0">
+                                <tr>
+                                    <td align="right" style="color:#555; font-size:14px;">Total Price:</td>
+                                    <td align="right" style="font-size:14px;">₹{{ purchase.total_price }}</td>
+                                </tr>
+                                <tr>
+                                    <td align="right" style="color:#555; font-size:14px;">Total Tax:</td>
+                                    <td align="right" style="font-size:14px;">₹{{ purchase.total_tax }}</td>
+                                </tr>
+                                <tr>
+                                    <td align="right" style="color:#555; font-size:14px;">Net Amount:</td>
+                                    <td align="right" style="font-size:14px;">₹{{ purchase.net_amount }}</td>
+                                </tr>
+                                <tr style="background:#f4f7ff;">
+                                    <td align="right" style="font-size:15px; font-weight:bold;">Rounded Amount:</td>
+                                    <td align="right" style="font-size:15px; font-weight:bold;">₹{{ purchase.rounded_amount }}</td>
+                                </tr>
+                                <tr>
+                                    <td align="right" style="color:#555; font-size:14px;">Cash Received:</td>
+                                    <td align="right" style="font-size:14px;">₹{{ purchase.cash_received }}</td>
+                                </tr>
+                                <tr style="background:#f4f7ff;">
+                                    <td align="right" style="font-size:15px; font-weight:bold;">Balance Returned:</td>
+                                    <td align="right" style="font-size:15px; font-weight:bold;">₹{{ purchase.balance_to_customer }}</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Change Breakdown -->
+                    <tr>
+                        <td style="padding:0 25px 25px;">
+                            <h2 style="margin-bottom:10px; font-size:20px; color:#333;">Change Breakdown</h2>
+
+                            <table width="100%" cellpadding="10" cellspacing="0" style="border-collapse:collapse;">
+                                <tr style="background:#f1f3ff;">
+                                    <th align="left" style="border:1px solid #ccc;">Denomination</th>
+                                    <th align="center" style="border:1px solid #ccc;">Count</th>
+                                </tr>
+
+                                {% for key, value in purchase.denomination_breakdown.items %}
+                                <tr>
+                                    <td style="border:1px solid #ccc;">₹{{ key }}</td>
+                                    <td align="center" style="border:1px solid #ccc;">{{ value }}</td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background:#4a6cf7; padding:18px; text-align:center; color:white; font-size:14px;">
+                            Thank you for shopping with us! <br>
+                            <span style="font-size:12px; opacity:0.8;">This is an auto-generated invoice.</span>
+                        </td>
+                    </tr>
+
+                </table>
+
+            </td>
+        </tr>
+    </table>
+
+</body>
+</html>
